@@ -1,0 +1,103 @@
+CREATE TABLE tbl_emcontacts (
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    emcontact_fn VARCHAR(64) NOT NULL,
+    emcontact_ln VARCHAR(64) NOT NULL,
+    relationship TEXT NOT NULL,
+    phone_number CHAR(11) NOT NULL
+);
+
+CREATE TABLE tbl_user (
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(64) NOT NULL,
+    last_name VARCHAR(64) NOT NULL,
+    birth_date DATE NOT NULL,
+    email VARCHAR(128) NOT NULL,
+    --password
+    sex ENUM("Male", "Female") NOT NULL,
+    user_height TINYINT NOT NULL,
+    user_weight TINYINT NOT NULL,
+    phone_number CHAR(11) NOT NULL
+    FOREIGN KEY (phone_number) REFERENCES tbl_emcontacts (phone_number)
+);
+
+CREATE TABLE tbl_conditions ( -- renamed from medconditions to conditons, napalitan na rin sa docs and sheets
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    med_conditons ENUM("Yes", "No") NOT NULL
+);
+
+CREATE TABLE tbl_allergens (
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name SET(
+        "Cow Milk",
+        "Nuts",
+        "Eggs",
+        "Fish",
+        "Wheat",
+        "Soy",
+        "Shellfish",
+        "Shrimp",
+        "Pollen",
+        "Dust mites",
+        "Pet dander",
+        "Others") NOT NULL
+
+);
+
+CREATE TABLE tbl_medications (
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    medication ENUM(
+        "Hypertension Medicines",
+        "Insulin",
+        "Levothyroxine",
+        "Antidepressants",
+        "Metformin",
+        "Glipizide",
+        "Others",) NOT NULL
+);
+
+CREATE TABLE tbl_threshold (
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    range ENUM("0-23%", "23-100%", "Above 100%") NOT NULL,
+    conditions_id TINYINT UNSIGNED,
+    status ENUM("Safe", "Caution", "Danger") NOT NULL,
+    advice TEXT NOT NULL,
+    FOREIGN KEY (conditions_id) REFERENCES tbl_conditions(id)
+);
+
+CREATE TABLE tbl_recommendations(
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id TINYINT UNSIGNED,
+    threshold_id TINYINT UNSIGNED,
+    date_adviced DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES tbl_user(id),
+    FOREIGN KEY (threshold_id) REFERENCES tbl_threshold(id)
+);
+
+CREATE TABLE tbl_beverages(
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name ENUM("Powdered Juice", "Natural Juice", "Sugar-Water Concentration") NOT NULL,
+    sugar_content VARCHAR(64) NOT NULL,
+    date_consumed DATE NOT NULL,
+);
+
+CREATE TABLE tbl_records (
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    beverages_id TINYINT UNSIGNED,
+    recommendations_id TINYINT UNSIGNED,
+    measured_sugar VARCHAR(64) NOT NULL,
+    datetime_consumed DATETIME NOT NULL,
+    percent_consumed VARCHAR(64) NOT NULL,
+    FOREIGN KEY (beverages_id) REFERENCES tbl_beverages(id),
+    FOREIGN KEY (recommendations_id) REFERENCES tbl_recommendations(id)
+);
+
+CREATE TABLE tbl_trends (
+    id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id TINYINT UNSIGNED,
+    records_id TINYINT UNSIGNED,
+    threshold_id TINYINT UNSIGNED
+    avg_sugar_day VARCHAR(64) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES tbl_user(id),
+    FOREIGN KEY (records_id) REFERENCES tbl_records(id),
+    FOREIGN KEY (threshold_id) REFERENCES tbl_threshold(id)
+);
