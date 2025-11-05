@@ -18,7 +18,7 @@ CREATE TABLE tbl_recommendation (
     recommendation_range ENUM("0-23%", "23-100%", "Above 100%") NOT NULL,
     medconditions_status ENUM("No", "Yes") NOT NULL,
     recommendation_status ENUM("Insufficient", "Normal", "Dangerous") NOT NULL,
-    advice TEXT NOT NULL,
+    advice TEXT NOT NULL
 );
 
 CREATE TABLE tbl_beverage (
